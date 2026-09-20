@@ -32,7 +32,7 @@ export const authMiddleware = async (
                     message: "Invalid token",
                 },
                 401
-            );
+            ); 
         }
 
         console.log('ppayload' + payload)
