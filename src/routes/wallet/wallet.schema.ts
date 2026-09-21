@@ -3,7 +3,7 @@ import z from "zod";
 
 
 
-const walletRequest = z.object({
+export const walletRequest = z.object({
     name: z.string(),
     type: z
       .enum([

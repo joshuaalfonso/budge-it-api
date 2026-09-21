@@ -3,6 +3,7 @@ import { createWalletController, deleteWalletController, getWalletController, ge
 import { authMiddleware } from "../../middleware/auth.middleware.js";
 import { validate } from "../../middleware/zod.middleware.js";
 import { querySchema } from "../../schema/param.schema.js";
+import { walletRequest } from "./wallet.schema.js";
 
 
 export const walletRoute = new Hono();
@@ -23,18 +24,20 @@ walletRoute.get(
 walletRoute.post(
     '',
     authMiddleware,
+    validate("json", walletRequest),
     createWalletController
 )
 
 walletRoute.put(
-    ':/id',
+    '/:id',
     authMiddleware,
     validate("param", querySchema),
+    validate("json", walletRequest),
     updateWalletController
 )
 
 walletRoute.delete(
-    ':/id',
+    '/:id',
     authMiddleware,
     validate("param", querySchema),
     deleteWalletController

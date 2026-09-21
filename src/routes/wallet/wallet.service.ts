@@ -52,7 +52,12 @@ export const updateWallet = async (
 ) => {
     const result = await db
         .update(wallets)
-        .set(data)
+        .set({
+            userId,
+            name: data.name,
+            type: data.type,
+            initialBalance: data.initial_balance ?? "0.00",
+        })
         .where(
         and(
             eq(wallets.id, walletId),
