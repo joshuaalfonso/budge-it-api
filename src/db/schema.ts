@@ -1,4 +1,3 @@
-import { relations } from "drizzle-orm/_relations";
 import { mysqlTable, int, varchar, text, timestamp, mysqlEnum, decimal, boolean, date } from "drizzle-orm/mysql-core";
 
 
@@ -45,16 +44,15 @@ export const wallets = mysqlTable("wallets", {
 
     type: mysqlEnum("type", [
         "cash",
-        "bank",
-        "ewallet",
+        "e_wallet",
         "credit_card",
         "savings",
         "other",
     ]).notNull(),
 
-    currency: varchar("currency", { length: 3 })
-        .notNull()
-        .default("PHP"),
+    // currency: varchar("currency", { length: 3 })
+    //     .notNull()
+    //     .default("PHP"),
 
     initialBalance: decimal("initial_balance", {
         precision: 15,

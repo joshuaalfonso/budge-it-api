@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { authGoogleController, meController } from "./auth.controller.js";
+import { authGoogleController, logoutController, meController } from "./auth.controller.js";
 import { validate } from "../middleware/zod.middleware.js";
 import { googleCredentialSchema } from "./auth.schema.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
@@ -13,8 +13,16 @@ authRoute.post(
     authGoogleController
 );
 
+
+authRoute.post(
+    "/logout",
+     authMiddleware,
+     logoutController
+)
+
 authRoute.get(
     "/me",
     authMiddleware,
     meController
 );
+

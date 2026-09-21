@@ -8,4 +8,4 @@ const pool = mysql.createPool({
 
 export const db = drizzle({
   client: pool,
-});
+}); 

@@ -3,6 +3,8 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors';
 import { authRoute } from './auth/auth.route.js';
 import type { HonoVariables } from './types/hono.js';
+import { dashboardRoute } from './routes/dashboard/dashboard.route.js';
+import { walletRoute } from './routes/wallet/wallet.route.js';
 
 const app = new Hono<{
     Variables: HonoVariables;
@@ -22,6 +24,8 @@ app.get('/', (c) => {
  
 
 app.route('/auth', authRoute);
+app.route('/dashboard', dashboardRoute);
+app.route('/wallet', walletRoute);
 
 serve({
   fetch: app.fetch,

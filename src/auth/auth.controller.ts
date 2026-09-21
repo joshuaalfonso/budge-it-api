@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import { createAccessToken, findOrCreateUser, verifyGoogleCredential } from "./auth.service.js";
-import { setCookie } from "hono/cookie";
+import { deleteCookie, setCookie } from "hono/cookie";
 import { db } from "../db/index.js";
 import { usersTable } from "../db/schema.js";
 import { eq } from "drizzle-orm";
@@ -59,12 +59,23 @@ export const authGoogleController = async (c: Context) => {
 
 }
 
+export const logoutController = async (c: Context) => {
+
+    deleteCookie(c, 'access_token', {
+        path: '/',
+    })
+
+    return c.json({
+        success: true,
+    })
+
+
+} 
+
 
 export const meController = async (c: Context) => {
     try {
         const userId = c.get("userId");
-
-        console.log("User ID from context:", userId);
 
         const [user] = await db
             .select({
@@ -84,9 +95,7 @@ export const meController = async (c: Context) => {
             );
         }
 
-        return c.json({
-            user,
-        });
+        return c.json(user);
 
     } catch (error) {
         console.error(error);

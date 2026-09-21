@@ -18,7 +18,6 @@ export const authMiddleware = async (
 
     try {
 
-        console.log("JWT_SECRET:", process.env.JWT_SECRET!);
         const payload = await verify(
             token,
             process.env.JWT_SECRET!,
@@ -34,8 +33,6 @@ export const authMiddleware = async (
                 401
             ); 
         }
-
-        console.log('ppayload' + payload)
 
         c.set("userId", payload.sub);
 
