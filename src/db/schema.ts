@@ -141,8 +141,9 @@ export const transactions = mysqlTable("transactions", {
         length: 500,
     }),
 
-    transactionDate: date("transaction_date")
-        .notNull(),
+    transactionDate: date("transaction_date", {
+        mode: "string",
+    }).notNull(),
 
     createdAt: timestamp("created_at")
         .defaultNow()

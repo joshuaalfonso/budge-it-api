@@ -19,8 +19,8 @@ export const TransactionService = {
         if (wallet_id) conditions.push(eq(transactions.walletId, wallet_id));
         if (category_id) conditions.push(eq(transactions.categoryId, category_id));
         if (type) conditions.push(eq(transactions.type, type));
-        if (start_date) conditions.push(gte(transactions.transactionDate, new Date(start_date)));
-        if (end_date) conditions.push(lte(transactions.transactionDate, new Date(end_date)));
+        // if (start_date) conditions.push(gte(transactions.transactionDate, new Date(start_date)));
+        // if (end_date) conditions.push(lte(transactions.transactionDate, new Date(end_date)));
 
         const data = await db
         .select()
@@ -49,36 +49,20 @@ export const TransactionService = {
     async create(userId: number, data: CreateTransactionInput) {
 
         const transaction = {
+            userId: userId,
             walletId: data.wallet_id,
             categoryId: data.category_id,
             type: data.type,
             amount: data.amount ?? "0.00",
-            userId,
-            transactionDate: new Date(data.transaction_date),
+            description: data.description,
+            transactionDate: "2026-09-22"
         }
+
+        // will fail if the reference id does not exists
 
         const [result] = await db.insert(transactions).values(transaction).$returningId();
         return this.findById(result.id);
-
-
-        // return await db.transaction(async (tx) => {
-
-        //     const transaction = {
-        //         ...data,
-        //         userId,
-        //         transactionDate: new Date(data.transactionDate),
-        //     }
-
-        //     const [inserted] = await tx.insert(transactions).values(transaction).$returningId();
-
-        //     const [newTransaction] = await tx
-        //         .select()
-        //         .from(transactions)
-        //         .where(eq(transactions.id, inserted.id));
-
-        //     return newTransaction;
-
-        // });
+        
     },
 
     async delete(id: number) {

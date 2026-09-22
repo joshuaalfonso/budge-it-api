@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { TransactionService } from "./transaction.service.js";
 
 export const TransactionController = {
+
     async getTransactions(c: Context) {
         const query = c.req.valid("query" as never);
         const userId = Number(c.get("userId")) ?? 0;
@@ -28,4 +29,5 @@ export const TransactionController = {
         await TransactionService.delete(id);
         return c.json({ success: true, message: "Transaction deleted successfully" });
     },
+    
 };
