@@ -10,17 +10,17 @@ import { categories, transactions, wallets } from "../../db/schema.js";
 import { db } from "../../db/index.js";
 
 export const TransactionService = {
-    async findAll(query: QueryTransactionInput) {
-        const { userId, walletId, categoryId, type, startDate, endDate, page, limit } = query;
+    async findAll(userId: number, query: QueryTransactionInput) {
+        const { wallet_id, category_id, type, start_date, end_date, page, limit } = query;
         const offset = (page - 1) * limit;
 
         const conditions = [eq(transactions.userId, userId)];
 
-        if (walletId) conditions.push(eq(transactions.walletId, walletId));
-        if (categoryId) conditions.push(eq(transactions.categoryId, categoryId));
+        if (wallet_id) conditions.push(eq(transactions.walletId, wallet_id));
+        if (category_id) conditions.push(eq(transactions.categoryId, category_id));
         if (type) conditions.push(eq(transactions.type, type));
-        if (startDate) conditions.push(gte(transactions.transactionDate, new Date(startDate)));
-        if (endDate) conditions.push(lte(transactions.transactionDate, new Date(endDate)));
+        if (start_date) conditions.push(gte(transactions.transactionDate, new Date(start_date)));
+        if (end_date) conditions.push(lte(transactions.transactionDate, new Date(end_date)));
 
         const data = await db
         .select()
@@ -47,80 +47,42 @@ export const TransactionService = {
     },
 
     async create(userId: number, data: CreateTransactionInput) {
-        return await db.transaction(async (tx) => {
-        // 1. Verify Wallet exists
-        const [wallet] = await tx
-            .select()
-            .from(wallets)
-            .where(and(eq(wallets.id, data.walletId), eq(wallets.userId, userId)))
-            .limit(1);
-
-        if (!wallet) {
-            throw new HTTPException(404, { message: "Wallet not found for this user" });
-        }
-
-        // 2. Verify Category exists
-        const [category] = await tx
-            .select()
-            .from(categories)
-            .where(eq(categories.id, data.categoryId))
-            .limit(1);
-
-        if (!category) {
-            throw new HTTPException(404, { message: "Category not found" });
-        }
 
         const transaction = {
-            ...data,
+            walletId: data.wallet_id,
+            categoryId: data.category_id,
+            type: data.type,
+            amount: data.amount ?? "0.00",
             userId,
-            transactionDate: new Date(data.transactionDate),
+            transactionDate: new Date(data.transaction_date),
         }
 
-        // 3. Insert Transaction
-        const [inserted] = await tx.insert(transactions).values(transaction).$returningId();
+        const [result] = await db.insert(transactions).values(transaction).$returningId();
+        return this.findById(result.id);
 
-        // 4. Update Wallet Balance atomically
-        //   const adjustment = data.type === "income" 
-        //     ? sql`${wallets.balance} + ${data.amount}`
-        //     : sql`${wallets.balance} - ${data.amount}`;
 
-        //   await tx
-        //     .update(wallets)
-        //     .set({ balance: adjustment })
-        //     .where(eq(wallets.id, data.walletId));
+        // return await db.transaction(async (tx) => {
 
-        // Any error thrown above automatically triggers a ROLLBACK
-        const [newTransaction] = await tx
-            .select()
-            .from(transactions)
-            .where(eq(transactions.id, inserted.id));
+        //     const transaction = {
+        //         ...data,
+        //         userId,
+        //         transactionDate: new Date(data.transactionDate),
+        //     }
 
-        return newTransaction;
-        });
+        //     const [inserted] = await tx.insert(transactions).values(transaction).$returningId();
+
+        //     const [newTransaction] = await tx
+        //         .select()
+        //         .from(transactions)
+        //         .where(eq(transactions.id, inserted.id));
+
+        //     return newTransaction;
+
+        // });
     },
 
-    async delete(id: number, userId: number) {
+    async delete(id: number) {
         return await db.transaction(async (tx) => {
-        // 1. Get existing transaction
-        const [existing] = await tx
-            .select()
-            .from(transactions)
-            .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
-            .limit(1);
-
-        if (!existing) {
-            throw new HTTPException(404, { message: "Transaction not found" });
-        }
-
-        // 2. Reverse balance adjustment
-        //   const reversal = existing.type === "income"
-        //     ? sql`${wallets.balance} - ${existing.amount}`
-        //     : sql`${wallets.balance} + ${existing.amount}`;
-
-        //   await tx
-        //     .update(wallets)
-        //     .set({ balance: reversal })
-        //     .where(eq(wallets.id, existing.walletId));
 
         // 3. Delete record
         await tx.delete(transactions).where(eq(transactions.id, id));
