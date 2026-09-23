@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { getDashboard } from "./dashboard.service.js";
+import { getDashboard, getMonthlyReport } from "./dashboard.service.js";
 
 
 
@@ -9,4 +9,13 @@ export const getDashboardController = async (c: Context) => {
   const dashboard = await getDashboard(userId);
 
   return c.json(dashboard);
+}
+
+export const getAnalyticsController = async (c: Context) => {
+  const userId = c.get("userId");
+
+  const analytics = await getMonthlyReport(userId);
+
+  return c.json(analytics)
+  
 }

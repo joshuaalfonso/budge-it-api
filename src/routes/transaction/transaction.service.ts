@@ -19,12 +19,27 @@ export const TransactionService = {
         if (wallet_id) conditions.push(eq(transactions.walletId, wallet_id));
         if (category_id) conditions.push(eq(transactions.categoryId, category_id));
         if (type) conditions.push(eq(transactions.type, type));
-        // if (start_date) conditions.push(gte(transactions.transactionDate, new Date(start_date)));
-        // if (end_date) conditions.push(lte(transactions.transactionDate, new Date(end_date)));
+        if (start_date) conditions.push(gte(transactions.transactionDate, start_date));
+        if (end_date) conditions.push(lte(transactions.transactionDate, end_date));
 
         const data = await db
-        .select()
+        .select({
+            id: transactions.id,
+            userId: transactions.userId,
+            walletId: transactions.walletId,
+            walletName: wallets.name,
+            categoryId: transactions.categoryId,
+            categoryName: categories.name,
+            type: transactions.type,
+            amount: transactions.amount,
+            description: transactions.description,
+            transactionDate: transactions.transactionDate,
+            createdAt: transactions.createdAt,
+            updatedAt: transactions.updatedAt,
+        })
         .from(transactions)
+        .leftJoin(wallets, eq(transactions.walletId, wallets.id))
+        .leftJoin(categories, eq(transactions.categoryId, categories.id))
         .where(and(...conditions))
         .orderBy(desc(transactions.transactionDate))
         .limit(limit)

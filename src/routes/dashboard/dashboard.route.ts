@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
-import { getDashboardController } from "./dashboard.controller.js";
+import { getAnalyticsController, getDashboardController } from "./dashboard.controller.js";
 
 
 
@@ -12,4 +12,11 @@ dashboardRoute.get(
     '',
     authMiddleware,
     getDashboardController 
+)
+
+
+dashboardRoute.get(
+    '/analytics',
+    authMiddleware,
+    getAnalyticsController
 )

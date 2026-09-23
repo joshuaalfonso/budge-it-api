@@ -1,15 +1,32 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db } from "../../db/index.js";
-import { wallets } from "../../db/schema.js";
+import { transactions, wallets } from "../../db/schema.js";
 import type { CreateWalletRequest, UpdateWalletRequest } from "./wallet.schema.js";
 
 
 export const getWallets = async (userId: number) => {
     return await db
-        .select()
+        .select({
+            id: wallets.id,
+            name: wallets.name,
+            type: wallets.type,
+            initialBalance: wallets.initialBalance,
+            totalTransactions: sql<number>`coalesce(sum(${transactions.amount}), 0)`,
+            // Current balance = initial balance + sum of transactions
+            balance: sql<number>`
+                ${wallets.initialBalance} + coalesce(sum(
+                    CASE 
+                        WHEN ${transactions.type} = 'expense' THEN -${transactions.amount}
+                        ELSE ${transactions.amount}
+                    END
+                ), 0)
+            `
+        })
         .from(wallets)
-        .where(eq(wallets.userId, userId));
-}
+        .leftJoin(transactions, eq(transactions.walletId, wallets.id))
+        .where(eq(wallets.userId, userId))
+        .groupBy(wallets.id);
+        }
 
 export const getWalletById = async (
     userId: number,

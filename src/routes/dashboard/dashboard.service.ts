@@ -1,4 +1,4 @@
-import { desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { categories, transactions, wallets } from "../../db/schema.js";
 
@@ -118,5 +118,87 @@ export async function getDashboard(userId: number) {
         wallets: walletRows,
 
         recentTransactions,
+    };
+}
+
+export const getMonthlyReport = async (userId: number, year?: number, month?: number) => {
+    const now = new Date();
+    const targetYear = year || now.getFullYear();
+    const targetMonth = month || now.getMonth() + 1;
+
+    // Format start and end date bounds for the SQL range query
+    const startDate = `${targetYear}-${String(targetMonth).padStart(2, '0')}-01`;
+    const lastDay = new Date(targetYear, targetMonth, 0).getDate();
+    const endDate = `${targetYear}-${String(targetMonth).padStart(2, '0')}-${lastDay}`;
+
+    // 1. Summary Cards Query
+    const summaryQuery = await db
+        .select({
+            totalIncome: sql<number>`coalesce(sum(case when ${transactions.type} = 'income' then ${transactions.amount} else 0 end), 0)`,
+            totalExpense: sql<number>`coalesce(sum(case when ${transactions.type} = 'expense' then ${transactions.amount} else 0 end), 0)`,
+            totalTransactions: count(transactions.id),
+        })
+        .from(transactions)
+        .where(
+            and(
+                eq(transactions.userId, userId),
+                gte(transactions.transactionDate, startDate),
+                lte(transactions.transactionDate, endDate)
+            )
+        );
+
+    const summary = summaryQuery[0];
+    const savings = Number(summary.totalIncome) - Number(summary.totalExpense);
+
+    // 2. Spending Trend (Daily Expenses)
+    const dailySpending = await db
+        .select({
+            date: transactions.transactionDate,
+            totalExpense: sql<number>`coalesce(sum(${transactions.amount}), 0)`,
+        })
+        .from(transactions)
+        .where(
+            and(
+                eq(transactions.userId, userId),
+                eq(transactions.type, 'expense'),
+                gte(transactions.transactionDate, startDate),
+                lte(transactions.transactionDate, endDate)
+            )
+        )
+        .groupBy(transactions.transactionDate)
+        .orderBy(transactions.transactionDate);
+
+    // 3. Spending by Category
+    const spendingByCategory = await db
+        .select({
+            categoryId: categories.id,
+            categoryName: categories.name,
+            icon: categories.icon,
+            color: categories.color,
+            total: sql<number>`coalesce(sum(${transactions.amount}), 0)`.as("total"), 
+        })
+        .from(transactions)
+        .innerJoin(categories, eq(transactions.categoryId, categories.id))
+        .where(
+            and(
+                eq(transactions.userId, userId),
+                eq(transactions.type, 'expense'),
+                gte(transactions.transactionDate, startDate),
+                lte(transactions.transactionDate, endDate)
+            )
+        )
+        .groupBy(categories.id, categories.name, categories.icon, categories.color)
+        .orderBy(sql`total DESC`);
+
+    return {
+        filters: { year: targetYear, month: targetMonth },
+        summary: {
+            totalIncome: Number(summary.totalIncome),
+            totalExpense: Number(summary.totalExpense),
+            savings,
+            totalTransactions: summary.totalTransactions,
+        },
+        dailySpending,
+        spendingByCategory,
     };
 }
