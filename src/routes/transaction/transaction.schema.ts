@@ -28,7 +28,8 @@ export const queryTransactionSchema = z.object({
   limit: z.string().optional().default("10").transform((val) => Number(val)),
   cursor_date: z.string().optional(),
   cursor_id: z.string().optional(),
-  direction: z.enum(['next', 'previous']).optional()
+  direction: z.enum(['next', 'previous']).optional(),
+  search: z.string().optional()
 });
 
 export const paramTransactionSchema = z.object({

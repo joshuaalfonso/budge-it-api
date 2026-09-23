@@ -1,4 +1,4 @@
-import { eq, and, gte, lte, desc, or, lt, gt, SQL, asc } from "drizzle-orm";
+import { eq, and, gte, lte, desc, or, lt, gt, SQL, asc, like } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 // import { sql } from "drizzle-orm";
 import type {
@@ -58,6 +58,7 @@ export const TransactionService = {
             start_date,
             end_date,
             limit,
+            search,
             cursor_date,
             cursor_id,
             direction = "next",
@@ -95,6 +96,12 @@ export const TransactionService = {
         if (end_date) {
             conditions.push(
                 lte(transactions.transactionDate, end_date)
+            );
+        }
+
+        if (search) {
+            conditions.push(
+                like(transactions.description, `%${search}%`)
             );
         }
 
