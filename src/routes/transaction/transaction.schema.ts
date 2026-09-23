@@ -25,7 +25,10 @@ export const queryTransactionSchema = z.object({
   start_date: z.string().optional(),
   end_date: z.string().optional(),
   page: z.string().optional().default("1").transform((val) => Number(val)),
-  limit: z.string().optional().default("20").transform((val) => Number(val)),
+  limit: z.string().optional().default("10").transform((val) => Number(val)),
+  cursor_date: z.string().optional(),
+  cursor_id: z.string().optional(),
+  direction: z.enum(['next', 'previous']).optional()
 });
 
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
