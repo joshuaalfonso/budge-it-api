@@ -282,11 +282,24 @@ export const TransactionService = {
             transactionDate: data.transaction_date
         }
 
-        // will fail if the reference id does not exists
-
         const [result] = await db.insert(transactions).values(transaction).$returningId();
         return this.findById(result.id);
-        
+    },
+
+    async update(id: number, userId: number, data: UpdateTransactionInput) {
+
+        const transaction = {
+            userId: userId,
+            walletId: data.wallet_id,
+            categoryId: data.category_id,
+            type: data.type,
+            amount: data.amount ?? "0.00",
+            description: data.description,
+            transactionDate: data.transaction_date
+        }
+
+        await db.update(transactions).set(transaction).where(eq(transactions.id, id));
+        return this.findById(id);
     },
 
     async delete(id: number) {

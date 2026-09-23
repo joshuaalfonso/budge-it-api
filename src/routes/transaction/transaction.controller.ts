@@ -23,6 +23,15 @@ export const TransactionController = {
         return c.json({ success: true, message: "Transaction created successfully", data }, 201);
     },
 
+    async updateTransaction(c: Context) {
+        const body = c.req.valid("json" as never);
+        const userId = Number(c.get("userId")) ?? 0;
+        const id = Number(c.req.param("id"));
+
+        const data = await TransactionService.update(id, userId, body);
+        return c.json({ success: true, message: "Transaction updated successfully", data }, 201);
+    },
+
     async deleteTransaction(c: Context) {
         const id = Number(c.req.param("id"));
         

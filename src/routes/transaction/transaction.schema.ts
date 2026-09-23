@@ -31,6 +31,10 @@ export const queryTransactionSchema = z.object({
   direction: z.enum(['next', 'previous']).optional()
 });
 
+export const paramTransactionSchema = z.object({
+  id: z.coerce.number().int().positive(),
+});
+
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;
 export type QueryTransactionInput = z.infer<typeof queryTransactionSchema>;
