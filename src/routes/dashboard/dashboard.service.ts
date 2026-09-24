@@ -151,22 +151,43 @@ export const getMonthlyReport = async (userId: number, year?: number, month?: nu
     const savings = Number(summary.totalIncome) - Number(summary.totalExpense);
 
     // 2. Spending Trend (Daily Expenses)
-    const dailySpending = await db
-        .select({
-            date: transactions.transactionDate,
-            totalExpense: sql<number>`coalesce(sum(${transactions.amount}), 0)`,
-        })
-        .from(transactions)
-        .where(
-            and(
-                eq(transactions.userId, userId),
-                eq(transactions.type, 'expense'),
-                gte(transactions.transactionDate, startDate),
-                lte(transactions.transactionDate, endDate)
-            )
+    const rawSpending = await db
+    .select({
+        date: transactions.transactionDate,
+        totalExpense: sql<number>`coalesce(sum(${transactions.amount}), 0)`,
+    })
+    .from(transactions)
+    .where(
+        and(
+        eq(transactions.userId, userId),
+        eq(transactions.type, 'expense'),
+        gte(transactions.transactionDate, startDate),
+        lte(transactions.transactionDate, endDate)
         )
-        .groupBy(transactions.transactionDate)
-        .orderBy(transactions.transactionDate);
+    )
+    .groupBy(transactions.transactionDate);
+
+    // 2. Map results into a quick-lookup map
+    const spendingMap = new Map(
+        rawSpending.map((row) => [
+            new Date(row.date).toISOString().split('T')[0],
+            Number(row.totalExpense),
+        ])
+    );
+
+    // 3. Loop through every date from startDate to endDate
+    const dailySpending = [];
+    let curr = new Date(startDate);
+    const end = new Date(endDate);
+
+    while (curr <= end) {
+        const dateStr = curr.toISOString().split('T')[0];
+        dailySpending.push({
+            date: dateStr,
+            totalExpense: spendingMap.get(dateStr) || 0,
+        });
+        curr.setDate(curr.getDate() + 1);
+    }
 
     // 3. Spending by Category
     const spendingByCategory = await db
