@@ -28,6 +28,8 @@ export const authGoogleController = async (c: Context) => {
             token,
             {
                 httpOnly: true,
+                // secure: true,
+                // sameSite: "none",
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "lax",
                 path: "/",

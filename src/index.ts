@@ -12,12 +12,13 @@ const app = new Hono<{
     Variables: HonoVariables;
 }>();
 
+
 app.use(
-    "*",
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    })
+  "*",
+  cors({
+    origin: (origin) => origin,
+    credentials: true,
+  })
 );
 
 app.get('/', (c) => {
@@ -63,7 +64,8 @@ app.onError((err, c) => {
 
 serve({
   fetch: app.fetch,
-  port: 3000
+  port: 3000,
+  hostname: '0.0.0.0',
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}`)
 })
