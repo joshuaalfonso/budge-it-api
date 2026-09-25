@@ -107,8 +107,8 @@ export async function getDashboard(userId: number) {
             eq(transactions.categoryId, categories.id)
         )
         .where(eq(transactions.userId, userId))
-        .orderBy(desc(transactions.transactionDate))
-        .limit(5);
+        .orderBy(desc(transactions.createdAt))
+        .limit(10);
 
     return {
         totalBalance,

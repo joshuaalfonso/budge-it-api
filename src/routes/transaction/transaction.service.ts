@@ -180,6 +180,7 @@ export const TransactionService = {
                 walletName: wallets.name,
                 categoryId: transactions.categoryId,
                 categoryName: categories.name,
+                categoryIcon: categories.icon,
                 type: transactions.type,
                 amount: transactions.amount,
                 description: transactions.description,
