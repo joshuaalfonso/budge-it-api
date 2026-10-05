@@ -4,62 +4,134 @@ import { deleteCookie, setCookie } from "hono/cookie";
 import { db } from "../db/index.js";
 import { usersTable } from "../db/schema.js";
 import { eq } from "drizzle-orm";
+import { OAuth2Client } from "google-auth-library";
 
+
+// export const authGoogleController = async (c: Context) => {
+
+//     const { credential } = await c.req.json();
+
+//     try {
+
+//         const googleUser = await verifyGoogleCredential(
+//             credential
+//         ); 
+
+//         const user =
+//             await findOrCreateUser(googleUser);
+
+//         const token =
+//             await createAccessToken(user.id);
+
+//         setCookie(
+//             c,
+//             "access_token",
+//             token,
+//             {
+//                 httpOnly: true,
+//                 secure: true,
+//                 sameSite: "none",
+//                 secure: process.env.NODE_ENV === "production",
+//                 sameSite: "lax",
+//                 path: "/",
+//                 maxAge: 60 * 60 * 24 * 7,
+//             }
+//         );
+
+//         return c.json({
+//             user: {
+//                 id: user.id,
+//                 email: user.email,
+//                 name: user.name,
+//                 picture: user.picture,
+//             },
+//         });
+
+//     }
+
+//     catch (error) {
+//         console.error(error);
+
+//         return c.json(
+//             {
+//                 message: "Authentication failed",
+//             },
+//             401
+//         );
+//     }
+
+// }
+
+// Initialize Google OAuth Client with Client Secret
+const client = new OAuth2Client(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    "postmessage" 
+);
 
 export const authGoogleController = async (c: Context) => {
+  // 1. Accept 'code' instead of 'credential'
+  const { code } = await c.req.json();
 
-    const { credential } = await c.req.json();
+  try { 
+    // 2. Exchange authorization code for tokens (Server-to-Server)
+    const { tokens } = await client.getToken(code);
 
-    try {
-
-        const googleUser = await verifyGoogleCredential(
-            credential
-        ); 
-
-        const user =
-            await findOrCreateUser(googleUser);
-
-        const token =
-            await createAccessToken(user.id);
-
-        setCookie(
-            c,
-            "access_token",
-            token,
-            {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-                // secure: process.env.NODE_ENV === "production",
-                // sameSite: "lax",
-                path: "/",
-                maxAge: 60 * 60 * 24 * 7,
-            }
-        );
-
-        return c.json({
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                picture: user.picture,
-            },
-        });
-
+    if (!tokens.id_token) {
+      throw new Error("No ID token returned from Google");
     }
 
-    catch (error) {
-        console.error(error);
+    // 3. Extract and verify the ID token returned in the token bundle
+    const ticket = await client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    
+    const googleUser = ticket.getPayload();
 
-        return c.json(
-            {
-                message: "Authentication failed",
-            },
-            401
-        );
+    if (!googleUser) {
+        return c.json({ message: "Invalid Google token payload" }, 400);
     }
 
-}
+    // --- Everything below this line remains EXACTLY THE SAME ---
+    const user = await findOrCreateUser({
+        googleId: googleUser.sub, // 'sub' is Google's unique user ID
+        email: googleUser.email,
+        name: googleUser.name,
+        picture: googleUser.picture,
+    });
+    const token = await createAccessToken(user.id);
+
+    setCookie(
+      c,
+      "access_token",
+      token,
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      }
+    );
+
+    return c.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      },
+    });
+
+  } catch (error) {
+    console.error(error);
+    return c.json(
+      { message: "Authentication failed" },
+      401
+    );
+  }
+};
 
 export const logoutController = async (c: Context) => {
 

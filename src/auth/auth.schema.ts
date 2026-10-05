@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-
-
 export const googleCredentialSchema = z.object({
-    credential: z
+    code: z
         .string()
         .min(1, "Credential is required"),
 });
