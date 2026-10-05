@@ -13,8 +13,9 @@ export const getDashboardController = async (c: Context) => {
 
 export const getAnalyticsController = async (c: Context) => {
   const userId = c.get("userId");
+  const { month, year } = c.req.query();
 
-  const analytics = await getMonthlyReport(userId);
+  const analytics = await getMonthlyReport(userId, +year, +month);
 
   return c.json(analytics)
   
