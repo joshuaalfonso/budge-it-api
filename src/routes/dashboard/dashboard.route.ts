@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { authMiddleware } from "../../middleware/auth.middleware.js";
-import { getAnalyticsController, getDashboardController } from "./dashboard.controller.js";
+import { getAnalyticsController, getDashboardController, getYearlyReportController } from "./dashboard.controller.js";
 import { validate } from "../../middleware/zod.middleware.js";
 import { monthlyReportQuerySchema } from "./dashboard.schema.js";
 
@@ -18,8 +18,15 @@ dashboardRoute.get(
 
 
 dashboardRoute.get(
-    '/analytics',
+    '/monthly-report',
     authMiddleware,
     validate("param", monthlyReportQuerySchema),
     getAnalyticsController
+)
+
+dashboardRoute.get(
+    '/yearly-report',
+    authMiddleware,
+    validate("param", monthlyReportQuerySchema),
+    getYearlyReportController
 )

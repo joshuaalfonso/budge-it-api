@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { getDashboard, getMonthlyReport } from "./dashboard.service.js";
+import { getDashboard, getMonthlyReport, getYearlyReport } from "./dashboard.service.js";
 
 
 
@@ -19,4 +19,14 @@ export const getAnalyticsController = async (c: Context) => {
 
   return c.json(analytics)
   
+}
+
+
+export const getYearlyReportController = async (c: Context) => {
+  const userId = c.get("userId");
+  const { year } = c.req.query();
+
+  const yearlyReports = await getYearlyReport(userId, +year);
+
+  return c.json(yearlyReports)
 }

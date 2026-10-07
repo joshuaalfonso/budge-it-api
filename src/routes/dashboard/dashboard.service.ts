@@ -131,21 +131,12 @@ export const getMonthlyReport = async (
     const targetYear = year || now.getFullYear();
     const targetMonth = month || now.getMonth() + 1;
 
-    // ============================================================
-    // Current month
-    // ============================================================
-
     const startDate = `${targetYear}-${String(targetMonth).padStart(2, "0")}-01`;
 
     const lastDay = new Date(targetYear, targetMonth, 0).getDate();
 
     const endDate =
         `${targetYear}-${String(targetMonth).padStart(2, "0")}-${lastDay}`;
-
-
-    // ============================================================
-    // Previous month
-    // ============================================================
 
     const previousDate = new Date(
         targetYear,
@@ -166,11 +157,6 @@ export const getMonthlyReport = async (
         `${previousYear}-${String(previousMonth).padStart(2, "0")}-${previousLastDay}`;
 
 
-    // ============================================================
-    // 1. Summary
-    // Current + previous month in ONE query
-    // ============================================================
-
     const summaryQuery = await db
         .select({
             // Current month income
@@ -189,7 +175,6 @@ export const getMonthlyReport = async (
                 )
             `,
 
-            // Current month expense
             totalExpense: sql<number>`
                 coalesce(
                     sum(
@@ -205,7 +190,6 @@ export const getMonthlyReport = async (
                 )
             `,
 
-            // Previous month income
             previousIncome: sql<number>`
                 coalesce(
                     sum(
@@ -221,7 +205,6 @@ export const getMonthlyReport = async (
                 )
             `,
 
-            // Previous month expense
             previousExpense: sql<number>`
                 coalesce(
                     sum(
@@ -237,7 +220,6 @@ export const getMonthlyReport = async (
                 )
             `,
 
-            // Only count transactions in the current month
             totalTransactions: sql<number>`
                 count(
                     case
@@ -269,40 +251,22 @@ export const getMonthlyReport = async (
 
     const totalTransactions = Number(summary.totalTransactions);
 
-
-    // ============================================================
-    // Savings
-    // ============================================================
-
     const savings = totalIncome - totalExpense;
 
-
-    // ============================================================
-    // Percentage calculations
-    // ============================================================
-
-    // Income change compared to previous month
     const incomePercentage =
         previousIncome === 0
             ? null
             : ((totalIncome - previousIncome) / previousIncome) * 100;
 
-    // Expense change compared to previous month
     const expensePercentage =
         previousExpense === 0
             ? null
             : ((totalExpense - previousExpense) / previousExpense) * 100;
 
-    // Savings as % of income
     const savingsPercentage =
         totalIncome === 0
             ? null
             : (savings / totalIncome) * 100;
-
-
-    // ============================================================
-    // 2. Spending Trend (Daily Expenses)
-    // ============================================================
 
     const rawSpending = await db
         .select({
@@ -323,18 +287,12 @@ export const getMonthlyReport = async (
         .groupBy(transactions.transactionDate);
 
 
-    // Create quick lookup map
     const spendingMap = new Map(
         rawSpending.map((row) => [
             new Date(row.date).toISOString().split("T")[0],
             Number(row.totalExpense),
         ])
     );
-
-
-    // ============================================================
-    // Fill in days with zero spending
-    // ============================================================
 
     const dailySpending = [];
 
@@ -351,11 +309,6 @@ export const getMonthlyReport = async (
 
         curr.setDate(curr.getDate() + 1);
     }
-
-
-    // ============================================================
-    // 3. Spending by Category
-    // ============================================================
 
     const spendingByCategory = await db
         .select({
@@ -389,11 +342,6 @@ export const getMonthlyReport = async (
         )
         .orderBy(sql`total DESC`);
 
-
-    // ============================================================
-    // Return
-    // ============================================================
-
     return {
         filters: {
             year: targetYear,
@@ -406,16 +354,196 @@ export const getMonthlyReport = async (
             savings,
             totalTransactions,
 
-            // Compared to previous month
             incomePercentage,
             expensePercentage,
 
-            // Savings / income
             savingsPercentage,
         },
 
         dailySpending,
 
         spendingByCategory,
+    };
+};
+
+export const getYearlyReport = async (
+    userId: number,
+    year?: number
+) => {
+    const now = new Date();
+    const targetYear = year ?? now.getFullYear();
+
+    const startDate = `${targetYear}-01-01`;
+    const endDate = `${targetYear}-12-31`;
+
+    const rawMonthlySummary = await db
+        .select({
+            month: sql<number>`
+                extract(month from ${transactions.transactionDate})
+            `,
+
+            totalIncome: sql<number>`
+                coalesce(
+                    sum(
+                        case
+                            when ${transactions.type} = 'income'
+                            then ${transactions.amount}
+                            else 0
+                        end
+                    ),
+                    0
+                )
+            `,
+
+            totalExpense: sql<number>`
+                coalesce(
+                    sum(
+                        case
+                            when ${transactions.type} = 'expense'
+                            then ${transactions.amount}
+                            else 0
+                        end
+                    ),
+                    0
+                )
+            `,
+
+            totalTransactions: sql<number>`
+                count(${transactions.id})
+            `,
+        })
+        .from(transactions)
+        .where(
+            and(
+                eq(transactions.userId, userId),
+                gte(transactions.transactionDate, startDate),
+                lte(transactions.transactionDate, endDate)
+            )
+        )
+        .groupBy(
+            sql`extract(month from ${transactions.transactionDate})`
+        )
+        .orderBy(
+            sql`extract(month from ${transactions.transactionDate})`
+        );
+
+    // Map months that actually have transactions
+    const monthlyMap = new Map(
+        rawMonthlySummary.map((row) => [
+            Number(row.month),
+            {
+                totalIncome: Number(row.totalIncome),
+                totalExpense: Number(row.totalExpense),
+                totalTransactions: Number(row.totalTransactions),
+            },
+        ])
+    );
+
+    // ALWAYS return all 12 months
+    const monthlySummary = Array.from(
+        { length: 12 },
+        (_, index) => {
+            const month = index + 1;
+
+            const data = monthlyMap.get(month) ?? {
+                totalIncome: 0,
+                totalExpense: 0,
+                totalTransactions: 0,
+            };
+
+            return {
+                month,
+                totalIncome: data.totalIncome,
+                totalExpense: data.totalExpense,
+                savings:
+                    data.totalIncome - data.totalExpense,
+                totalTransactions:
+                    data.totalTransactions,
+            };
+        }
+    );
+
+    // Yearly totals
+    const totalIncome = monthlySummary.reduce(
+        (sum, month) => sum + month.totalIncome,
+        0
+    );
+
+    const totalExpense = monthlySummary.reduce(
+        (sum, month) => sum + month.totalExpense,
+        0
+    );
+
+    const totalTransactions = monthlySummary.reduce(
+        (sum, month) => sum + month.totalTransactions,
+        0
+    );
+
+    const savings = totalIncome - totalExpense;
+
+    const savingsPercentage =
+        totalIncome === 0
+            ? null
+            : (savings / totalIncome) * 100;
+
+    const spendingByCategory = await db
+    .select({
+        categoryId: categories.id,
+        categoryName: categories.name,
+        icon: categories.icon,
+        color: categories.color,
+
+        total: sql<number>`
+            coalesce(
+                sum(${transactions.amount}),
+                0
+            )
+        `.as("total"),
+    })
+    .from(transactions)
+    .innerJoin(
+        categories,
+        eq(
+            transactions.categoryId,
+            categories.id
+        )
+    )
+    .where(
+        and(
+            eq(transactions.userId, userId),
+            eq(transactions.type, "expense"),
+            gte(
+                transactions.transactionDate,
+                startDate
+            ),
+            lte(
+                transactions.transactionDate,
+                endDate
+            )
+        )
+    )
+    .groupBy(
+        categories.id,
+        categories.name,
+        categories.icon,
+        categories.color
+    )
+    .orderBy(sql`total DESC`);
+
+    return {
+        filters: {
+            year: targetYear,
+        },
+
+        summary: {
+            totalIncome,
+            totalExpense,
+            savings,
+            totalTransactions,
+            savingsPercentage,
+        },
+
+        monthlySummary,
+        spendingByCategory
     };
 };
