@@ -452,13 +452,13 @@ export const getYearlyReport = async (
             };
 
             return {
-                month,
+                month: new Date(2000, index).toLocaleString("en-US", {
+                    month: "long",
+                }),
                 totalIncome: data.totalIncome,
                 totalExpense: data.totalExpense,
-                savings:
-                    data.totalIncome - data.totalExpense,
-                totalTransactions:
-                    data.totalTransactions,
+                savings: data.totalIncome - data.totalExpense,
+                totalTransactions: data.totalTransactions,
             };
         }
     );
