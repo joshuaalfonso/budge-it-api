@@ -1,0 +1,853 @@
+{
+  "version": "6",
+  "dialect": "mysql",
+  "id": "5dccfe19-7454-44d7-be59-7e961bb0124d",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
+  "ddl": [
+    {
+      "name": "categories",
+      "entityType": "tables"
+    },
+    {
+      "name": "transactions",
+      "entityType": "tables"
+    },
+    {
+      "name": "transfers",
+      "entityType": "tables"
+    },
+    {
+      "name": "users",
+      "entityType": "tables"
+    },
+    {
+      "name": "wallets",
+      "entityType": "tables"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "int",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(100)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "enum('income','expense')",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "type",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(50)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "icon",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "varchar(20)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "color",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "boolean",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "false",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "is_default",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "boolean",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "true",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "is_active",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "categories"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "wallet_id",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "category_id",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "enum('income','expense')",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "type",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "decimal(15,2)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "amount",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "varchar(500)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "description",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "date",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "transaction_date",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "transactions"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "from_wallet_id",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "to_wallet_id",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "decimal(15,2)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "amount",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "varchar(500)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "description",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "date",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "transfer_date",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "transfers"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "google_id",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "email",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "varchar(255)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "picture",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "varchar(50)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "'user'",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "role",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "users"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": true,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "int",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "varchar(100)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "name",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "enum('cash','e_wallet','credit_card','savings','other')",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "type",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "decimal(15,2)",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(0.00)",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "initial_balance",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "boolean",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "true",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "is_active",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "created_at",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "type": "timestamp",
+      "notNull": true,
+      "autoIncrement": false,
+      "default": "(now())",
+      "onUpdateNow": true,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "updated_at",
+      "entityType": "columns",
+      "table": "wallets"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "categories",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "transactions",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "transfers",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "users",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "name": "PRIMARY",
+      "table": "wallets",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        {
+          "value": "google_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": false,
+      "name": "google_id_unique",
+      "table": "users",
+      "entityType": "indexes"
+    },
+    {
+      "columns": [
+        {
+          "value": "email",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "using": null,
+      "algorithm": null,
+      "lock": null,
+      "nameExplicit": false,
+      "name": "email_unique",
+      "table": "users",
+      "entityType": "indexes"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "categories_user_id_users_id_fkey",
+      "entityType": "fks",
+      "table": "categories"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transactions_user_id_users_id_fkey",
+      "entityType": "fks",
+      "table": "transactions"
+    },
+    {
+      "columns": [
+        "wallet_id"
+      ],
+      "tableTo": "wallets",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transactions_wallet_id_wallets_id_fkey",
+      "entityType": "fks",
+      "table": "transactions"
+    },
+    {
+      "columns": [
+        "category_id"
+      ],
+      "tableTo": "categories",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transactions_category_id_categories_id_fkey",
+      "entityType": "fks",
+      "table": "transactions"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transfers_user_id_users_id_fkey",
+      "entityType": "fks",
+      "table": "transfers"
+    },
+    {
+      "columns": [
+        "from_wallet_id"
+      ],
+      "tableTo": "wallets",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transfers_from_wallet_id_wallets_id_fkey",
+      "entityType": "fks",
+      "table": "transfers"
+    },
+    {
+      "columns": [
+        "to_wallet_id"
+      ],
+      "tableTo": "wallets",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "transfers_to_wallet_id_wallets_id_fkey",
+      "entityType": "fks",
+      "table": "transfers"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "wallets_user_id_users_id_fkey",
+      "entityType": "fks",
+      "table": "wallets"
+    }
+  ],
+  "renames": []
+}
