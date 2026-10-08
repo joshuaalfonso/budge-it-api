@@ -137,6 +137,8 @@ export const logoutController = async (c: Context) => {
 
     deleteCookie(c, 'access_token', {
         path: '/',
+        secure: true,
+        sameSite: "none",
     })
 
     return c.json({
