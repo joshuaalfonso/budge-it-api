@@ -7,6 +7,7 @@ import { dashboardRoute } from './routes/dashboard/dashboard.route.js';
 import { walletRoute } from './routes/wallet/wallet.route.js';
 import categoryRoutes from './routes/category/category.route.js';
 import transactionRoutes from './routes/transaction/transaction.route.js';
+import { settingRoute } from './routes/setting/setting.route.js';
 
 const app = new Hono<{
     Variables: HonoVariables;
@@ -30,6 +31,7 @@ app.route('/dashboard', dashboardRoute);
 app.route('/wallet', walletRoute);
 app.route('/category', categoryRoutes);
 app.route('/transaction', transactionRoutes);
+app.route('/setting', settingRoute)
 
 
 // Global 404 Handler (Unmatched routes)
